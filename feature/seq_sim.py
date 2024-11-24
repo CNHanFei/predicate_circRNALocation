@@ -29,6 +29,7 @@ def smith_waterman_similarity(seq1, seq2):
 
 # 初始化相似性矩阵
 num_cells = len(cells)
+print(num_cells)
 similarity_matrix = np.zeros((num_cells, num_cells))
 
 # 计算相似性矩阵
@@ -37,6 +38,8 @@ for i in range(num_cells):
         similarity = smith_waterman_similarity(sequences[i], sequences[j])
         similarity_matrix[i, j] = similarity
         similarity_matrix[j, i] = similarity  # 因为矩阵是对称的
+
+print(similarity_matrix)
 
 # 将相似性矩阵保存为 DataFrame 并写入 Excel
 similarity_df = pd.DataFrame(similarity_matrix, index=cells, columns=cells)
