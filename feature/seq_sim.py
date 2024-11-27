@@ -2,6 +2,7 @@ import pandas as pd
 from Bio import pairwise2
 import math
 import numpy as np
+from tqdm import tqdm  # 用于显示进度条
 
 # 读取 Excel 文件
 df = pd.read_excel('../dataset/circ_seq/seq1_unique_cells_and_sequences.xlsx')
@@ -29,17 +30,15 @@ def smith_waterman_similarity(seq1, seq2):
 
 # 初始化相似性矩阵
 num_cells = len(cells)
-print(num_cells)
 similarity_matrix = np.zeros((num_cells, num_cells))
 
-# 计算相似性矩阵
-for i in range(num_cells):
-    for j in range(i, num_cells):
+# 计算相似性矩阵并显示进度条
+print("开始计算相似性矩阵...")
+for i in tqdm(range(num_cells), desc="计算行", position=0):
+    for j in tqdm(range(i, num_cells),desc='列'):
         similarity = smith_waterman_similarity(sequences[i], sequences[j])
         similarity_matrix[i, j] = similarity
         similarity_matrix[j, i] = similarity  # 因为矩阵是对称的
-
-print(similarity_matrix)
 
 # 将相似性矩阵保存为 DataFrame 并写入 Excel
 similarity_df = pd.DataFrame(similarity_matrix, index=cells, columns=cells)
