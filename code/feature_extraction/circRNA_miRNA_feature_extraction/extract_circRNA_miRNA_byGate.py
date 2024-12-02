@@ -1,3 +1,5 @@
+from operator import index
+
 import pandas as pd
 import numpy as np
 import networkx as nx
@@ -28,7 +30,7 @@ def single_generate_graph_adj_and_feature(network, feature):
     """
     features = sp.csr_matrix(feature).tolil().todense()
 
-    graph = nx.from_numpy_matrix(network)
+    graph = nx.from_numpy_array(network)
     adj = nx.adjacency_matrix(graph)
     adj = sp.coo_matrix(adj)
 
@@ -92,11 +94,14 @@ def parse_args(epochs,l):
     return parser.parse_args()
 
 if __name__ == '__main__':
-    df_drug = pd.read_csv('../../../feature/miRNA_drug_feature_128.csv', index_col=0)
-    df_func = pd.read_csv('../../../dataset/miRNA_func_sim.csv', header=None)
+    df_disease = pd.read_excel(r'C:\HJH\circPreTest\pythonProject\feature\circRNA_disease_features_128.xlsx', index_col=0)
+    df_sim = pd.read_excel(r'C:\HJH\circPreTest\pythonProject\feature\circRNA_disease_cell_similarity.xlsx',header=0,index_col=0)
 
-    feature = df_drug.values
-    similarity = df_func.values
+    feature = df_disease.values
+    similarity = df_sim.values
+    # 确保 similarity 是数值类型
+    similarity = pd.to_numeric(similarity.flatten(), errors='coerce').reshape(df_sim.shape)
+
     #二值化
     network = sim_thresholding(similarity,0.8)
     adj, features = single_generate_graph_adj_and_feature(network, feature)
@@ -104,6 +109,6 @@ if __name__ == '__main__':
     print(embeddings.shape)
 
     # 指定要保存的CSV文件的路径
-    file_path = '../../../feature/gate_feature_drug_0.8_128_0.01.csv'
+    file_path = r'C:\HJH\circPreTest\pythonProject\feature\gate_feature_circRNAAnddisease_0.8_128_0.01.csv'
 
     np.savetxt(file_path, embeddings, delimiter=',',)
